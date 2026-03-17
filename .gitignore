@@ -1,0 +1,111 @@
+# ============================================================
+# Laravel (backend/)
+# ============================================================
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/.env.backup
+backend/.env.production
+backend/storage/app/public
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/testing/
+backend/storage/framework/views/
+backend/storage/logs/
+backend/bootstrap/cache/
+backend/public/hot
+backend/public/storage
+backend/.phpunit.result.cache
+backend/phpunit.xml
+backend/coverage/
+backend/.php-cs-fixer.cache
+backend/.php_cs.cache
+
+# ============================================================
+# Next.js (frontend/)
+# ============================================================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/build/
+frontend/.turbo/
+
+# ============================================================
+# Node / npm / yarn / pnpm (root and any workspace)
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ============================================================
+# Environment files (all levels)
+# ============================================================
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# ============================================================
+# Docker / infrastructure
+# ============================================================
+pgdata/
+docker-compose.override.yml
+
+# ============================================================
+# IDE and editor
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.fleet/
+.claude/
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Desktop.ini
+ehthumbs.db
+
+# ============================================================
+# Build artifacts
+# ============================================================
+*.log
+*.pid
+*.seed
+*.pid.lock
+dist/
+tmp/
+temp/
+
+# ============================================================
+# Agent / tooling state
+# ============================================================
+.atl/
+
+# ============================================================
+# Secrets / keys (extra safety net)
+# ============================================================
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
