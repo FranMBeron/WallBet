@@ -21,7 +21,7 @@ const INITIAL: FormState = {
   name: '',
   description: '',
   type: 'private',
-  buy_in: '0',
+  buy_in: '30',
   max_participants: '20',
   starts_at: '',
   ends_at: '',
@@ -75,6 +75,12 @@ export function CreateLeagueForm() {
     e.preventDefault();
     setGlobalError(null);
     setFieldErrors({});
+
+    if (Number(form.buy_in) < 30) {
+      setFieldErrors({ buy_in: ['Minimum buy-in is $30'] });
+      return;
+    }
+
     setLoading(true);
 
     const payload = {
@@ -130,7 +136,7 @@ export function CreateLeagueForm() {
       <div className="grid grid-cols-2 gap-4">
         <Field label="Buy-in (USD)" id="buy_in" error={fe('buy_in')}>
           <input
-            id="buy_in" type="number" min="0" step="1" required
+            id="buy_in" type="number" min="30" step="1" required
             value={form.buy_in}
             onChange={(e) => set('buy_in', e.target.value)}
             className={inputCls}
@@ -173,14 +179,17 @@ export function CreateLeagueForm() {
           type="button"
           role="switch"
           aria-checked={form.is_public}
-          onClick={() => set('is_public', !form.is_public)}
-          className={`relative h-6 w-11 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B6FEB] focus:ring-offset-2 focus:ring-offset-black ${
-            form.is_public ? 'bg-[#1B6FEB]' : 'bg-[#333333]'
+          onClick={() => {
+            setForm((prev) => ({ ...prev, is_public: !prev.is_public }));
+            setFieldErrors((prev) => ({ ...prev, is_public: undefined }));
+          }}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full overflow-hidden transition-colors duration-200 focus:outline-none ${
+            form.is_public ? 'bg-[#1B6FEB]' : 'bg-gray-600'
           }`}
         >
           <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
-              form.is_public ? 'translate-x-5' : 'translate-x-0.5'
+            className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+              form.is_public ? 'translate-x-[22px]' : 'translate-x-0.5'
             }`}
           />
         </button>

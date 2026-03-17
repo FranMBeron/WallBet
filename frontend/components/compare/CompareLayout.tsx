@@ -5,8 +5,7 @@ import { useCompare } from '@/lib/hooks/useCompare';
 import { EvolutionLine } from '@/components/analytics/EvolutionLine';
 import { Skeleton } from '@/components/ui/SkeletonCard';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { formatPct, formatCurrency, gainLossClass } from '@/lib/utils';
-import type { LeaderboardEntry } from '@/types/api';
+import { formatPct, gainLossClass } from '@/lib/utils';
 
 interface CompareParticipantOption {
   id: string;
