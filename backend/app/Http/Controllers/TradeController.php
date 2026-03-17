@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\TradeAction;
+use App\Http\Requests\ExecuteTradeRequest;
+use App\Http\Resources\TradeLogResource;
+use App\Models\League;
+use App\Models\TradeLog;
+use App\Models\WallbitKey;
+use App\Services\WallbitClient;
+use App\Services\WallbitVault;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+class TradeController extends Controller
+{
+    public function __construct(
+        private readonly WallbitClient $client,
+        private readonly WallbitVault  $vault,
+    ) {}
+
+    /**
+     * POST /leagues/{league}/trades
+     * Execute a trade in WallBit, insert TradeLog only on success.
+     * Returns 201 TradeLogResource or 422 on WallBit error.
+     */
+    public function execute(ExecuteTradeRequest $request, League $league): JsonResponse
+    {
+        $user = $request->user();
+
+        $wallbitKey = WallbitKey::where('user_id', $user->id)
+            ->where('is_valid', true)
+            ->firstOrFail();
+
+        $apiKey = $this->vault->decrypt($wallbitKey);
+
+        try {
+            $tradeData = $this->client->executeTrade(
+                $apiKey,
+                $request->symbol,
+                $request->direction,
+                $request->order_type,
+                (float) $request->amount,
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $shares = (float) ($tradeData['shares'] ?? 0.0);
+        $price  = $shares > 0 ? (float) $request->amount / $shares : 0.0;
+
+        $trade = TradeLog::create([
+            'league_id'    => $league->id,
+            'user_id'      => $user->id,
+            'ticker'       => $request->symbol,
+            'action'       => TradeAction::from($request->direction),
+            'quantity'     => $shares,
+            'price'        => $price,
+            'total_amount' => (float) $request->amount,
+            'executed_at'  => $tradeData['created_at'] ?? now(),
+        ]);
+
+        return (new TradeLogResource($trade))->response()->setStatusCode(201);
+    }
+
+    /**
+     * GET /leagues/{league}/trades
+     * Return paginated own trades for the league, ordered executed_at DESC.
+     */
+    public function index(Request $request, League $league): AnonymousResourceCollection
+    {
+        $trades = TradeLog::where('league_id', $league->id)
+            ->where('user_id', $request->user()->id)
+            ->orderBy('executed_at', 'desc')
+            ->paginate(15);
+
+        return TradeLogResource::collection($trades);
+    }
+}

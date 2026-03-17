@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeagueController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\TradeController;
 use App\Http\Controllers\WallbitController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +42,8 @@ Route::prefix('leagues')->middleware('auth:sanctum')->group(function () {
     Route::get('/{league}',           [LeagueController::class, 'show']);
     Route::post('/{league}/join',     [LeagueController::class, 'join'])->middleware('wallbit.connected');
     Route::delete('/{league}/leave',  [LeagueController::class, 'leave']);
+
+    Route::post('/{league}/trades',   [TradeController::class, 'execute'])->middleware('league.member');
+    Route::get('/{league}/trades',    [TradeController::class, 'index'])->middleware('league.member');
+    Route::get('/{league}/portfolio', [PortfolioController::class, 'show'])->middleware('league.member');
 });
