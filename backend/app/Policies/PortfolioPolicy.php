@@ -30,4 +30,13 @@ class PortfolioPolicy
     {
         return $league->status === LeagueStatus::Finished;
     }
+
+    /**
+     * Compare two users post-league — reuses viewPositions logic.
+     * Both users must be league members (validated by CompareController before calling).
+     */
+    public function viewCompare(User $viewer, User $target, League $league): bool
+    {
+        return $this->viewPositions($viewer, $target, $league);
+    }
 }

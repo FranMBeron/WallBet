@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompareController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LeagueController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\TradeController;
@@ -46,4 +49,10 @@ Route::prefix('leagues')->middleware('auth:sanctum')->group(function () {
     Route::post('/{league}/trades',   [TradeController::class, 'execute'])->middleware('league.member');
     Route::get('/{league}/trades',    [TradeController::class, 'index'])->middleware('league.member');
     Route::get('/{league}/portfolio', [PortfolioController::class, 'show'])->middleware('league.member');
+
+    // Competition — IMPORTANT: leaderboard/history MUST be declared BEFORE leaderboard to prevent shadowing
+    Route::get('/{league}/leaderboard/history', [LeaderboardController::class, 'history'])->middleware('league.member');
+    Route::get('/{league}/leaderboard',         [LeaderboardController::class, 'index'])->middleware('league.member');
+    Route::get('/{league}/analytics',           [AnalyticsController::class, 'index'])->middleware('league.member');
+    Route::get('/{league}/compare',             [CompareController::class, 'index'])->middleware('league.member');
 });

@@ -8,6 +8,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
       - pgdata:/var/lib/postgresql/data
 
   redis:
