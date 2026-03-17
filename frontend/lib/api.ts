@@ -3,6 +3,33 @@ import { clearToken, getToken } from './auth';
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 // ----------------------------------------------------------------
+// CSRF helper for Laravel Sanctum stateful API.
+// Fetches /sanctum/csrf-cookie (sets the XSRF-TOKEN cookie), then
+// reads and URL-decodes that cookie value so it can be sent as the
+// X-XSRF-TOKEN request header on subsequent state-changing calls.
+// fetch does NOT forward cookies as headers automatically (unlike
+// axios), so we must do it manually.
+// ----------------------------------------------------------------
+
+async function getCsrfToken(): Promise<string | null> {
+  if (typeof document === 'undefined') return null;
+
+  await fetch(`${API_URL}/sanctum/csrf-cookie`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('XSRF-TOKEN='));
+
+  if (!match) return null;
+
+  // Laravel URL-encodes the token value; decode before sending.
+  return decodeURIComponent(match.split('=')[1]);
+}
+
+// ----------------------------------------------------------------
 // Central typed fetcher — used as SWR `fetcher` argument.
 // All hooks pass just the path (e.g. "/leagues/my").
 // ----------------------------------------------------------------
@@ -53,6 +80,7 @@ export async function apiMutate<T = unknown>(
   body?: unknown,
 ): Promise<T> {
   const token = getToken();
+  const csrfToken = await getCsrfToken();
 
   const res = await fetch(`${API_URL}/api${path}`, {
     method,
@@ -60,6 +88,7 @@ export async function apiMutate<T = unknown>(
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(csrfToken ? { 'X-XSRF-TOKEN': csrfToken } : {}),
     },
     credentials: 'include',
     body: body !== undefined ? JSON.stringify(body) : undefined,

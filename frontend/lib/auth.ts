@@ -16,6 +16,9 @@ export function setToken(token: string): void {
 export function clearToken(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(TOKEN_KEY);
+  // Also clear the presence cookie that middleware reads.
+  // Setting max-age=0 (or expires in the past) immediately expires it.
+  document.cookie = 'wallbet_auth=; path=/; max-age=0';
 }
 
 export function isAuthenticated(): boolean {

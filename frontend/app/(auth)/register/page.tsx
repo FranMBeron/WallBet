@@ -10,7 +10,7 @@ import type { RegisterResponse, ApiValidationError } from '@/types/api';
 interface FieldErrors {
   email?: string[];
   username?: string[];
-  display_name?: string[];
+  name?: string[];
   password?: string[];
 }
 
@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     email: '',
     username: '',
-    display_name: '',
+    name: '',
     password: '',
     password_confirmation: '',
   });
@@ -94,14 +94,14 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="display_name" className="block text-sm font-medium text-gray-300 mb-1">Display name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Display name</label>
           <input
-            id="display_name" type="text" required
-            value={form.display_name} onChange={update('display_name')}
+            id="name" type="text" required
+            value={form.name} onChange={update('name')}
             className="w-full rounded-md border border-[#333333] bg-black px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#1B6FEB] focus:outline-none focus:ring-1 focus:ring-[#1B6FEB]"
             placeholder="Your Name"
           />
-          {fieldError('display_name')}
+          {fieldError('name')}
         </div>
 
         <div>

@@ -15,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "WallBet — Fantasy Stock Trading",
+  title: "WallBet",
   description: "Compete in fantasy stock-trading leagues powered by your Wallbit portfolio.",
 };
 
