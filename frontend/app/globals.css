@@ -1,0 +1,110 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  /* Wallbit forced dark palette — no light mode */
+  :root {
+    /* #000000 black background */
+    --background: oklch(0 0 0);
+    --foreground: oklch(1 0 0);
+
+    /* #111111 surface / card */
+    --card: oklch(0.13 0 0);
+    --card-foreground: oklch(1 0 0);
+    --popover: oklch(0.13 0 0);
+    --popover-foreground: oklch(1 0 0);
+
+    /* #1B6FEB accent blue */
+    --primary: oklch(0.53 0.21 255);
+    --primary-foreground: oklch(1 0 0);
+
+    /* #222222 secondary / muted */
+    --secondary: oklch(0.18 0 0);
+    --secondary-foreground: oklch(1 0 0);
+    --muted: oklch(0.18 0 0);
+    --muted-foreground: oklch(0.65 0 0);
+
+    /* #1B6FEB accent */
+    --accent: oklch(0.53 0.21 255);
+    --accent-foreground: oklch(1 0 0);
+
+    /* #EF4444 destructive red */
+    --destructive: oklch(0.63 0.22 25);
+    --destructive-foreground: oklch(1 0 0);
+
+    /* #222222 border / input */
+    --border: oklch(0.18 0 0);
+    --input: oklch(0.18 0 0);
+    --ring: oklch(0.53 0.21 255);
+
+    /* Chart colors */
+    --chart-1: oklch(0.53 0.21 255);
+    --chart-2: oklch(0.63 0.22 25);
+    --chart-3: oklch(0.55 0.17 145);
+    --chart-4: oklch(0.68 0.16 55);
+    --chart-5: oklch(0.58 0.18 310);
+
+    --radius: 0.5rem;
+
+    /* Sidebar (same dark surface) */
+    --sidebar: oklch(0.13 0 0);
+    --sidebar-foreground: oklch(1 0 0);
+    --sidebar-primary: oklch(0.53 0.21 255);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.18 0 0);
+    --sidebar-accent-foreground: oklch(1 0 0);
+    --sidebar-border: oklch(0.18 0 0);
+    --sidebar-ring: oklch(0.53 0.21 255);
+  }
+
+  .theme {
+    --font-sans: var(--font-sans);
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  /* Dark scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #111111;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+  }
+}
+
+/* Gain / loss color utilities */
+.text-gain { color: #22C55E; }
+.text-loss { color: #EF4444; }
+.bg-gain   { background-color: #22C55E; }
+.bg-loss   { background-color: #EF4444; }
