@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LeagueController;
 use App\Http\Controllers\WallbitController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,16 @@ Route::prefix('wallbit')->middleware('auth:sanctum')->group(function () {
     Route::post('/connect', [WallbitController::class, 'connect'])->middleware('throttle:5,1');
     Route::get('/status', [WallbitController::class, 'status']);
     Route::delete('/disconnect', [WallbitController::class, 'disconnect']);
+});
+
+// Leagues — all protected
+// IMPORTANT: /my and /invite/{code} MUST be declared BEFORE /{league} to prevent shadowing
+Route::prefix('leagues')->middleware('auth:sanctum')->group(function () {
+    Route::get('/',                   [LeagueController::class, 'index']);
+    Route::post('/',                  [LeagueController::class, 'store']);
+    Route::get('/my',                 [LeagueController::class, 'my']);
+    Route::get('/invite/{code}',      [LeagueController::class, 'findByCode']);
+    Route::get('/{league}',           [LeagueController::class, 'show']);
+    Route::post('/{league}/join',     [LeagueController::class, 'join'])->middleware('wallbit.connected');
+    Route::delete('/{league}/leave',  [LeagueController::class, 'leave']);
 });

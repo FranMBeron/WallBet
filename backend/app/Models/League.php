@@ -23,6 +23,7 @@ class League extends Model
         'max_participants',
         'status',
         'invite_code',
+        'password',
         'is_public',
         'starts_at',
         'ends_at',
