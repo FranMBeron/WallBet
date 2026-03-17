@@ -13,7 +13,8 @@ export function cn(...inputs: ClassValue[]) {
  * Format a number as USD currency.
  * e.g. 1234.5 → "$1,234.50"
  */
-export function formatCurrency(value: number, decimals = 2): string {
+export function formatCurrency(value: number | null | undefined, decimals = 2): string {
+  if (value == null) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -26,7 +27,8 @@ export function formatCurrency(value: number, decimals = 2): string {
  * Format a decimal number as a percentage string.
  * e.g. 12.345 → "+12.35%"  |  -5.1 → "-5.10%"
  */
-export function formatPct(value: number, decimals = 2, showSign = true): string {
+export function formatPct(value: number | null | undefined, decimals = 2, showSign = true): string {
+  if (value == null) return '—';
   const sign = showSign && value > 0 ? '+' : '';
   return `${sign}${value.toFixed(decimals)}%`;
 }
@@ -57,7 +59,8 @@ export function formatDateShort(iso: string): string {
 /**
  * Return the CSS class for a gain/loss value.
  */
-export function gainLossClass(value: number): string {
+export function gainLossClass(value: number | null | undefined): string {
+  if (value == null) return 'text-muted-foreground';
   if (value > 0) return 'text-gain';
   if (value < 0) return 'text-loss';
   return 'text-muted-foreground';

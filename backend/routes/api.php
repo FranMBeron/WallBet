@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Auth\DemoLoginController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompareController;
 use App\Http\Controllers\LeaderboardController;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/demo-login', [DemoLoginController::class, 'login']);
 
     // Protected auth endpoints
     Route::middleware('auth:sanctum')->group(function () {

@@ -37,7 +37,8 @@ class PortfolioController extends Controller
             return response()->json(['message' => 'Access denied.'], 403);
         }
 
-        $portfolio = $this->portfolioService->buildPortfolio($league, $target);
+        $portfolio         = $this->portfolioService->buildPortfolio($league, $target);
+        $portfolio['user'] = $target;
 
         return (new PortfolioResource($portfolio))->response();
     }

@@ -70,7 +70,7 @@
     --font-sans: var(--font-sans);
   }
 
-  * {
+  *:not([class*="driver-"]) {
     @apply border-border outline-ring/50;
   }
 
@@ -108,3 +108,137 @@
 .text-loss { color: #EF4444; }
 .bg-gain   { background-color: #22C55E; }
 .bg-loss   { background-color: #EF4444; }
+
+/* ─── Driver.js tour overrides ─────────────────────────────────────────────── */
+
+/* Popover container */
+.driver-popover {
+  background-color: #111111 !important;
+  border: 1px solid #222222 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+  min-width: 280px !important;
+  max-width: 360px !important;
+  overflow: hidden !important;
+}
+
+/* Arrow — reset all borders then set only the visible side */
+.driver-popover-arrow {
+  border: 5px solid transparent !important;
+}
+.driver-popover-arrow-side-top.driver-popover-arrow    { border-bottom-color: #111111 !important; }
+.driver-popover-arrow-side-bottom.driver-popover-arrow { border-top-color:    #111111 !important; }
+.driver-popover-arrow-side-left.driver-popover-arrow   { border-right-color:  #111111 !important; }
+.driver-popover-arrow-side-right.driver-popover-arrow  { border-left-color:   #111111 !important; }
+
+/* Title */
+.driver-popover-title {
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Body / description */
+.driver-popover-description {
+  color: #9ca3af !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+/* Footer row */
+.driver-popover-footer {
+  margin-top: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Progress text ("1 of 2") */
+.driver-popover-progress-text {
+  color: #6b7280 !important;
+  font-size: 11px !important;
+  flex: 1 !important;
+}
+
+/* ---- Buttons shared reset ---- */
+.driver-popover-next-btn,
+.driver-popover-prev-btn,
+.driver-popover-done-btn {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+  text-shadow: none !important;
+}
+
+/* Next / Done button — filled blue */
+.driver-popover-next-btn,
+.driver-popover-done-btn {
+  background-color: #1B6FEB !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+.driver-popover-next-btn:hover,
+.driver-popover-done-btn:hover {
+  background-color: #1558c7 !important;
+}
+.driver-popover-next-btn:focus,
+.driver-popover-done-btn:focus {
+  outline: 2px solid #1B6FEB !important;
+  outline-offset: 2px !important;
+}
+
+/* Previous button — ghost */
+.driver-popover-prev-btn {
+  background-color: transparent !important;
+  color: #6b7280 !important;
+  border: 1px solid #333333 !important;
+}
+.driver-popover-prev-btn:hover:not(:disabled) {
+  background-color: #1a1a1a !important;
+  color: #9ca3af !important;
+}
+.driver-popover-prev-btn:disabled,
+.driver-popover-prev-btn.driver-popover-btn-disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+}
+
+/* Close "×" button */
+.driver-popover-close-btn {
+  color: #6b7280 !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+.driver-popover-close-btn:hover {
+  color: #d1d5db !important;
+  background-color: #1e1e1e !important;
+}
+
+/* Overlay — ensure the SVG overlay is visible and above everything */
+.driver-overlay {
+  z-index: 10000 !important;
+}
+
+/* Ensure highlighted element is visible above overlay */
+.driver-active-element {
+  z-index: 10001 !important;
+  position: relative !important;
+}

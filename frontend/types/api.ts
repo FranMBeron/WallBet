@@ -40,10 +40,11 @@ export interface League {
   type: LeagueType;
   buy_in: number;
   max_participants: number;
-  participant_count: number;
+  member_count: number;
   status: LeagueStatus;
   invite_code: string;
   is_public: boolean;
+  is_member: boolean;
   starts_at: string;   // ISO 8601
   ends_at: string;     // ISO 8601
   created_by: string;  // User ID
@@ -144,8 +145,8 @@ export interface TradesPerDay {
 }
 
 export interface AnalyticsResponse {
-  avg_return_pct: number;
-  median_return_pct: number;
+  avg_return_pct: number | null;
+  median_return_pct: number | null;
   positive_count: number;
   negative_count: number;
   returns_distribution: ReturnBucket[];

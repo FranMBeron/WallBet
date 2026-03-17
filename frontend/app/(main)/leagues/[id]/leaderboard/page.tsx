@@ -1,7 +1,8 @@
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLeaderboard } from '@/lib/hooks/useLeaderboard';
+import { useLeague } from '@/lib/hooks/useLeague';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { LeagueHeader } from '@/components/layout/LeagueHeader';
 import { TabBar } from '@/components/layout/TabBar';
@@ -11,12 +12,13 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function LeaderboardPage({ params }: Props) {
-  const { id } = use(params);
+  const { id } = params;
   const { user } = useAuth();
+  const { data: league, isLoading: leagueLoading } = useLeague(id);
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
   const { data, isLoading, error, mutate } = useLeaderboard(id, sortBy);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -46,11 +48,11 @@ export default function LeaderboardPage({ params }: Props) {
   return (
     <div>
       {/* League header */}
-      {isLoading && !data ? (
+      {leagueLoading ? (
         <div className="mb-4"><SkeletonCard /></div>
-      ) : data?.league ? (
+      ) : league ? (
         <>
-          <LeagueHeader league={data.league} />
+          <LeagueHeader league={league} />
           <TabBar leagueId={id} />
         </>
       ) : null}
@@ -76,23 +78,26 @@ export default function LeaderboardPage({ params }: Props) {
               </tbody>
             </table>
           </div>
-        ) : error ? (
+        ) : error && (error as { status?: number }).status !== 403 ? (
           <ErrorState
             message="Couldn't load the leaderboard."
             onRetry={() => mutate()}
           />
-        ) : !data?.leaderboard?.length ? (
+        ) : !data?.leaderboard?.length || (error as { status?: number })?.status === 403 ? (
           <EmptyState
-            title="No entries yet"
-            description="The leaderboard will populate once participants make trades."
+            title="No hay participantes aún"
+            description="El leaderboard se completará cuando los participantes se unan y operen."
           />
         ) : (
-          <LeaderboardTable
-            entries={data.leaderboard}
-            currentUser={user}
-            onSortChange={handleSort}
-            activeSort={sortBy}
-          />
+          <div data-tour="leaderboard-table">
+            <LeaderboardTable
+              entries={data.leaderboard}
+              currentUser={user}
+              leagueId={id}
+              onSortChange={handleSort}
+              activeSort={sortBy}
+            />
+          </div>
         )}
       </div>
     </div>

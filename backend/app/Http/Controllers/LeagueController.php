@@ -59,14 +59,22 @@ class LeagueController extends Controller
             return response()->json(['message' => 'Could not generate a unique invite code. Please try again.'], 500);
         }
 
-        $password = null;
+        $rawPassword = null;
+        $password    = null;
         if ($request->filled('password')) {
-            $password = Hash::make($request->string('password')->value());
+            $rawPassword = $request->string('password')->value();
+            $password    = Hash::make($rawPassword);
+        }
+
+        // Guard: never store the raw password as the description
+        $description = $request->input('description');
+        if ($rawPassword && $description === $rawPassword) {
+            $description = null;
         }
 
         $league = League::create([
             'name'             => $request->name,
-            'description'      => $request->description,
+            'description'      => $description,
             'type'             => $request->type,
             'buy_in'           => $request->buy_in,
             'max_participants' => $request->max_participants,
@@ -77,6 +85,15 @@ class LeagueController extends Controller
             'password'         => $password,
             'status'           => LeagueStatus::Upcoming,
             'created_by'       => $user->id,
+        ]);
+
+        // Automatically enrol the creator as a member so the league
+        // appears on their Dashboard (which queries league_members).
+        LeagueMember::create([
+            'league_id'       => $league->id,
+            'user_id'         => $user->id,
+            'initial_capital' => $league->buy_in,
+            'joined_at'       => now(),
         ]);
 
         return (new LeagueResource($league))->response()->setStatusCode(201);
@@ -115,9 +132,20 @@ class LeagueController extends Controller
     /**
      * GET /leagues/{league}
      * Return league details with is_member flag.
+     * Private leagues are only visible to their members.
      */
-    public function show(Request $request, League $league): LeagueResource
+    public function show(Request $request, League $league): LeagueResource|JsonResponse
     {
+        if (!$league->is_public) {
+            $isMember = $league->leagueMembers()
+                ->where('user_id', $request->user()->id)
+                ->exists();
+
+            if (!$isMember) {
+                return response()->json(['message' => 'You are not a member of this league.'], 403);
+            }
+        }
+
         return new LeagueResource($league);
     }
 
@@ -144,13 +172,17 @@ class LeagueController extends Controller
             return response()->json(['message' => 'This league is not accepting new members.'], 422);
         }
 
-        // Guard 4: check WallBit balance
-        $wallbitKey = WallbitKey::where('user_id', $user->id)
-            ->where('is_valid', true)
-            ->first();
+        // Guard 4: check WallBit balance (skip in demo mode)
+        if (config('app.demo_mode')) {
+            $balance = 100_000.0;
+        } else {
+            $wallbitKey = WallbitKey::where('user_id', $user->id)
+                ->where('is_valid', true)
+                ->first();
 
-        $decryptedKey = $this->vault->decrypt($wallbitKey);
-        $balance      = $this->client->getBalance($decryptedKey);
+            $decryptedKey = $this->vault->decrypt($wallbitKey);
+            $balance      = $this->client->getBalance($decryptedKey);
+        }
 
         if ($balance < $league->buy_in) {
             return response()->json(['message' => 'Insufficient WallBit balance to join this league.'], 422);

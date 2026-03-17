@@ -12,13 +12,13 @@ export function AnalyticsCards({ data }: AnalyticsCardsProps) {
       label: 'Avg Return',
       value: formatPct(data.avg_return_pct),
       valueClass: gainLossClass(data.avg_return_pct),
-      icon: data.avg_return_pct >= 0 ? TrendingUp : TrendingDown,
+      icon: (data.avg_return_pct ?? 0) >= 0 ? TrendingUp : TrendingDown,
     },
     {
       label: 'Median Return',
       value: formatPct(data.median_return_pct),
       valueClass: gainLossClass(data.median_return_pct),
-      icon: data.median_return_pct >= 0 ? TrendingUp : TrendingDown,
+      icon: (data.median_return_pct ?? 0) >= 0 ? TrendingUp : TrendingDown,
     },
     {
       label: 'Positive Traders',

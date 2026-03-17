@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { apiFetcher, apiMutate } from '@/lib/api';
@@ -11,11 +11,11 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import type { League, ApiValidationError } from '@/types/api';
 
 interface Props {
-  params: Promise<{ code: string }>;
+  params: { code: string };
 }
 
 export default function JoinByCodePage({ params }: Props) {
-  const { code } = use(params);
+  const { code } = params;
   const router = useRouter();
 
   const { data: league, isLoading, error, mutate } = useSWR<League>(
@@ -76,7 +76,7 @@ export default function JoinByCodePage({ params }: Props) {
             <p>Buy-in: <span className="text-white">{league.buy_in > 0 ? formatCurrency(league.buy_in) : 'Free'}</span></p>
             <p>Starts: <span className="text-white">{formatDate(league.starts_at)}</span></p>
             <p>Ends: <span className="text-white">{formatDate(league.ends_at)}</span></p>
-            <p>Participants: <span className="text-white">{league.participant_count} / {league.max_participants}</span></p>
+            <p>Participants: <span className="text-white">{league.member_count} / {league.max_participants}</span></p>
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export default function JoinByCodePage({ params }: Props) {
               </label>
               <input
                 id="password"
-                type="text"
+                type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

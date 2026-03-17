@@ -56,16 +56,19 @@ export async function apiFetcher<T>(path: string): Promise<T> {
 
   if (!res.ok) {
     // Attempt to parse JSON error body; fall back to status text
-    let errorBody: unknown;
+    let errorBody: Record<string, unknown>;
     try {
-      errorBody = await res.json();
+      errorBody = await res.json() as Record<string, unknown>;
     } catch {
       errorBody = { message: res.statusText };
     }
-    throw errorBody;
+    // Attach HTTP status so callers can distinguish error types (e.g. 404 vs 500)
+    throw { ...errorBody, status: res.status };
   }
 
-  return res.json() as Promise<T>;
+  const json = await res.json() as Record<string, unknown>;
+  // Laravel API Resources wrap responses in {"data": ...} — unwrap automatically.
+  return (json?.data !== undefined ? json.data : json) as T;
 }
 
 // ----------------------------------------------------------------
@@ -118,5 +121,7 @@ export async function apiMutate<T = unknown>(
     throw data;
   }
 
-  return data as T;
+  // Laravel API Resources wrap responses in {"data": ...} — unwrap automatically.
+  const json = data as Record<string, unknown>;
+  return (json?.data !== undefined ? json.data : json) as T;
 }

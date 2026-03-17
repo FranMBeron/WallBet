@@ -18,6 +18,8 @@ return [
             explode(',', env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
+    'demo_mode' => env('APP_DEMO_MODE', false),
+
     'maintenance' => [
         'driver' => 'file',
     ],

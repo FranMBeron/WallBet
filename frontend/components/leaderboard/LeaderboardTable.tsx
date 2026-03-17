@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { RankBadge } from './RankBadge';
 import { formatCurrency, formatPct, gainLossClass, cn } from '@/lib/utils';
@@ -38,6 +39,7 @@ const COLUMNS: Column[] = [
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
   currentUser?: User | null;
+  leagueId?: string;
   onSortChange?: (key: SortKey) => void;
   activeSort?: string;
 }
@@ -51,6 +53,7 @@ function SortIcon({ col, activeSort }: { col: SortKey; activeSort?: string }) {
 export function LeaderboardTable({
   entries,
   currentUser,
+  leagueId,
   onSortChange,
   activeSort,
 }: LeaderboardTableProps) {
@@ -92,7 +95,7 @@ export function LeaderboardTable({
           <tr className="border-b border-[#222222] bg-[#111111]">
             {/* Rank + User columns — sticky */}
             <th
-              className="sticky left-0 z-10 bg-[#111111] px-4 py-3 text-left font-medium text-gray-400 cursor-pointer hover:text-white whitespace-nowrap"
+              className="sticky left-0 z-10 bg-[#111111] px-4 py-3 text-left font-medium text-gray-400 cursor-pointer hover:text-white whitespace-nowrap min-w-[96px]"
               onClick={() => handleSort('rank')}
             >
               Rank <SortIcon col="rank" activeSort={effectiveSort} />
@@ -115,12 +118,17 @@ export function LeaderboardTable({
                 <SortIcon col={col.key} activeSort={effectiveSort} />
               </th>
             ))}
+
+            {/* Portfolio link column */}
+            {leagueId && <th className="px-4 py-3" />}
           </tr>
         </thead>
 
         <tbody className="bg-black divide-y divide-[#1a1a1a]">
           {sorted.map((entry) => {
             const isMe = currentUser && entry.user.id === currentUser.id;
+            // Solid dark-navy for sticky cells — opaque so scrolled content doesn't bleed through
+            const stickyBg = isMe ? 'bg-[#060e1c]' : 'bg-black';
 
             return (
               <tr
@@ -128,23 +136,17 @@ export function LeaderboardTable({
                 className={cn(
                   'transition-colors',
                   isMe
-                    ? 'bg-[#1B6FEB]/5 border-l-2 border-l-[#1B6FEB]'
+                    ? 'bg-[#060e1c] border-l-2 border-l-[#1B6FEB]'
                     : 'hover:bg-[#111111]',
                 )}
               >
                 {/* Sticky: Rank */}
-                <td className={cn(
-                  'sticky left-0 z-10 px-4 py-3 whitespace-nowrap',
-                  isMe ? 'bg-[#1B6FEB]/5' : 'bg-black',
-                )}>
+                <td className={cn('sticky left-0 z-10 px-4 py-3 whitespace-nowrap min-w-[96px]', stickyBg)}>
                   <RankBadge rank={entry.rank} rankChange={entry.rank_change} />
                 </td>
 
                 {/* Sticky: User */}
-                <td className={cn(
-                  'sticky left-[96px] z-10 px-4 py-3 whitespace-nowrap min-w-[140px]',
-                  isMe ? 'bg-[#1B6FEB]/5' : 'bg-black',
-                )}>
+                <td className={cn('sticky left-[96px] z-10 px-4 py-3 whitespace-nowrap min-w-[140px]', stickyBg)}>
                   <div className="flex items-center gap-2">
                     {entry.user.avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -213,6 +215,18 @@ export function LeaderboardTable({
                     {entry.risk_score}
                   </span>
                 </td>
+
+                {/* Portfolio link */}
+                {leagueId && (
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <Link
+                      href={`/leagues/${leagueId}/portfolio?userId=${entry.user.id}`}
+                      className="text-xs text-[#1B6FEB] hover:text-white transition-colors"
+                    >
+                      Ver →
+                    </Link>
+                  </td>
+                )}
               </tr>
             );
           })}

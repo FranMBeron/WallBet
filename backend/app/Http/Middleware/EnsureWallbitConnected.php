@@ -13,6 +13,11 @@ class EnsureWallbitConnected
      */
     public function handle(Request $request, Closure $next): mixed
     {
+        // In demo mode, skip the WallBit connection check
+        if (config('app.demo_mode')) {
+            return $next($request);
+        }
+
         $connected = WallbitKey::where('user_id', $request->user()->id)
             ->where('is_valid', true)
             ->exists();

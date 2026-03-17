@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+
 import { Lock } from 'lucide-react';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { useLeaderboardHistory } from '@/lib/hooks/useLeaderboardHistory';
@@ -12,6 +12,7 @@ import { DistributionBar } from '@/components/analytics/DistributionBar';
 import { EvolutionLine } from '@/components/analytics/EvolutionLine';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 // Top tickers section — design override: parent guards on `status === 'finished'`,
 // child uses optional chaining on top_tickers?.map(...)
@@ -35,11 +36,11 @@ function TopTickersSection({ analytics }: { analytics: { top_tickers: Array<{ ti
 }
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function AnalyticsPage({ params }: Props) {
-  const { id } = use(params);
+  const { id } = params;
   const { data: league, isLoading: leagueLoading } = useLeague(id);
   const { data: analytics, isLoading, error, mutate } = useAnalytics(id);
   const { data: history } = useLeaderboardHistory(id);
@@ -62,15 +63,22 @@ export default function AnalyticsPage({ params }: Props) {
             <SkeletonCard />
             <SkeletonCard />
           </div>
-        ) : error ? (
+        ) : error && (error as { status?: number }).status !== 403 ? (
           <ErrorState
             message="Couldn't load analytics data."
             onRetry={() => mutate()}
           />
-        ) : !analytics ? null : (
+        ) : !analytics || (error as { status?: number } | undefined)?.status === 403 || (analytics.avg_return_pct === null && analytics.total_trades === 0) ? (
+          <EmptyState
+            title="Sin datos todavía"
+            description="Las analíticas estarán disponibles una vez que comiencen las operaciones."
+          />
+        ) : (
           <>
             {/* Stat cards */}
-            <AnalyticsCards data={analytics} />
+            <div data-tour="analytics-stats">
+              <AnalyticsCards data={analytics} />
+            </div>
 
             {/* Distribution chart */}
             {analytics.returns_distribution.length > 0 && (
@@ -86,9 +94,11 @@ export default function AnalyticsPage({ params }: Props) {
                 Parent: only render <TopTickersSection> when league.status === 'finished'
                 Child: uses analytics.top_tickers?.map(...) with optional chaining */}
             {league?.status === 'finished' ? (
-              <TopTickersSection analytics={analytics} />
+              <div data-tour="analytics-tickers">
+                <TopTickersSection analytics={analytics} />
+              </div>
             ) : (
-              <div className="flex items-center gap-3 rounded-xl border border-[#222222] bg-[#111111] px-4 py-5">
+              <div data-tour="analytics-tickers" className="flex items-center gap-3 rounded-xl border border-[#222222] bg-[#111111] px-4 py-5">
                 <Lock className="h-5 w-5 text-gray-600 flex-shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-white">Top tickers locked</p>

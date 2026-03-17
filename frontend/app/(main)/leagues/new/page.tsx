@@ -12,7 +12,7 @@ export default function NewLeaguePage() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-[#222222] bg-[#111111] p-6">
+      <div data-tour="create-league-form" className="rounded-xl border border-[#222222] bg-[#111111] p-6">
         <CreateLeagueForm />
       </div>
     </div>

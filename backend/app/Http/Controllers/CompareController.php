@@ -187,7 +187,9 @@ class CompareController extends Controller
             foreach ($rawPositions as $pos) {
                 $ticker  = is_array($pos) ? ($pos['ticker'] ?? '') : ($pos->ticker ?? '');
                 $shares  = is_array($pos) ? (float) ($pos['shares'] ?? 0) : (float) ($pos->shares ?? 0);
-                $value   = is_array($pos) ? (float) ($pos['value'] ?? 0) : (float) ($pos->value ?? 0);
+                $value   = is_array($pos)
+                    ? (float) ($pos['current_value'] ?? $pos['value'] ?? 0)
+                    : (float) ($pos->current_value ?? $pos->value ?? 0);
                 $weight  = $totalValue > 0 ? round($value / $totalValue * 100, 4) : 0.0;
 
                 $positions[] = [

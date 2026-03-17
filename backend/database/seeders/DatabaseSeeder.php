@@ -8,6 +8,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Seed demo data in future phases
+        if (config('app.demo_mode')) {
+            $this->call(DemoModeSeeder::class);
+        }
     }
 }

@@ -40,7 +40,7 @@ export default function ConnectWallbitPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form data-tour="wallbit-connect" onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="api_key" className="block text-sm font-medium text-gray-300 mb-1">
             Wallbit API Key

@@ -85,7 +85,7 @@ export function CreateLeagueForm() {
 
     const payload = {
       name: form.name,
-      description: form.description || undefined,
+      description: form.description.trim() || null,
       type: form.type,
       buy_in: Number(form.buy_in),
       max_participants: Number(form.max_participants),
@@ -202,7 +202,7 @@ export function CreateLeagueForm() {
       {!form.is_public && (
         <Field label="League password" id="password" error={fe('password')}>
           <input
-            id="password" type="text" required={!form.is_public}
+            id="password" type="password" required={!form.is_public}
             value={form.password}
             onChange={(e) => set('password', e.target.value)}
             className={inputCls} placeholder="Entry password for members"

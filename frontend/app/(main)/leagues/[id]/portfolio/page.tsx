@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+
 import { useSearchParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import { usePortfolio } from '@/lib/hooks/usePortfolio';
@@ -16,11 +16,11 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function PortfolioPage({ params }: Props) {
-  const { id } = use(params);
+  const { id } = params;
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId') ?? undefined;
 
@@ -44,7 +44,7 @@ export default function PortfolioPage({ params }: Props) {
         </>
       ) : null}
 
-      <div className="mt-4">
+      <div className="mt-4" data-tour="portfolio-hidden">
         <h2 className="text-lg font-semibold text-white mb-4">
           {isOwnPortfolio ? 'My Portfolio' : `${portfolio?.user?.display_name ?? 'Member'}'s Portfolio`}
         </h2>
@@ -63,18 +63,23 @@ export default function PortfolioPage({ params }: Props) {
             <SkeletonCard />
             <SkeletonCard />
           </div>
-        ) : error ? (
+        ) : error && ![403, 404].includes((error as { status?: number }).status ?? 0) ? (
           <ErrorState
             message="Couldn't load portfolio data."
             onRetry={() => mutate()}
           />
-        ) : !portfolio ? null : portfolio.positions.length === 0 ? (
+        ) : !portfolio || [403, 404].includes((error as { status?: number } | undefined)?.status ?? 0) ? (
           <EmptyState
-            title="No positions yet"
-            description="This portfolio doesn't have any open positions."
+            title="No tenés un portfolio en esta liga aún"
+            description="Unite a la liga para empezar a operar."
+          />
+        ) : portfolio.positions.length === 0 ? (
+          <EmptyState
+            title="No tenés un portfolio en esta liga aún"
+            description="Unite a la liga para empezar a operar."
           />
         ) : (
-          <div className="space-y-6">
+          <div data-tour="portfolio-positions" className="space-y-6">
             {/* Summary stats */}
             <PortfolioSummary summary={portfolio.summary} />
 

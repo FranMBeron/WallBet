@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { apiMutate } from '@/lib/api';
-import { setToken } from '@/lib/auth';
+import { setToken, setDemoMode } from '@/lib/auth';
 import type { LoginResponse, ApiError } from '@/types/api';
 
 export default function LoginPage() {
@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,6 +34,26 @@ export default function LoginPage() {
       setError(apiErr?.message ?? 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDemoLogin() {
+    setDemoLoading(true);
+    try {
+      const data = await apiMutate<{ token: string; user: { id: string; name: string; email: string; display_name: string; avatar_url: string | null } }>(
+        '/auth/demo-login',
+        'POST',
+        undefined,
+      );
+      setToken(data.token);
+      setDemoMode();
+      document.cookie = 'wallbet_auth=1; path=/; max-age=86400';
+      sessionStorage.setItem('wallbet_demo_tour', '1');
+      router.push('/dashboard');
+    } catch {
+      setError('Demo login no disponible en este momento.');
+    } finally {
+      setDemoLoading(false);
     }
   }
 
@@ -87,6 +108,26 @@ export default function LoginPage() {
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
+
+      {/* Divider */}
+      <div className="relative my-5">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs text-gray-500">
+          <span className="bg-[#111111] px-2">o</span>
+        </div>
+      </div>
+
+      {/* Demo access */}
+      <button
+        data-tour="demo-button"
+        onClick={handleDemoLogin}
+        disabled={demoLoading}
+        className="w-full rounded-lg border border-[#1B6FEB]/40 bg-[#1B6FEB]/10 py-2.5 text-sm font-medium text-[#1B6FEB] transition-colors hover:bg-[#1B6FEB]/20 disabled:opacity-50"
+      >
+        {demoLoading ? 'Entrando…' : '▶ Probar Demo'}
+      </button>
 
       <p className="mt-6 text-center text-sm text-gray-400">
         No account?{' '}

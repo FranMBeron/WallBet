@@ -15,6 +15,13 @@ class League extends Model
 {
     use HasFactory, HasUuids;
 
+    /**
+     * Attributes that should never be serialized.
+     */
+    protected $hidden = [
+        'password',
+    ];
+
     protected $fillable = [
         'name',
         'description',

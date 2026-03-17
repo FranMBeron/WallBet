@@ -2,8 +2,10 @@
 // Desktop: fixed 256px sidebar + scrollable content area.
 // Mobile: sticky topbar with hamburger drawer trigger.
 
+import 'driver.js/dist/driver.css';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { MobileDrawer } from '@/components/layout/MobileDrawer';
+import { DemoTourButton } from '@/components/demo/DemoTourButton';
 
 export default function MainLayout({
   children,
@@ -32,6 +34,9 @@ export default function MainLayout({
           {children}
         </main>
       </div>
+
+      {/* Demo tour button — only renders when localStorage.is_demo === 'true' */}
+      <DemoTourButton />
     </div>
   );
 }

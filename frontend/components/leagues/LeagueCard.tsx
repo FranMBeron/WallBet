@@ -32,7 +32,7 @@ export function LeagueCard({ league }: LeagueCardProps) {
         </span>
         <span className="flex items-center gap-1">
           <Users className="h-3.5 w-3.5" />
-          {league.participant_count} / {league.max_participants}
+          {league.member_count} / {league.max_participants}
         </span>
       </div>
 
