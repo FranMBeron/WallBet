@@ -2,8 +2,8 @@
 set -e
 
 echo "=== Starting WallBet ==="
-echo "=== Running migrations ==="
-php artisan migrate --force 2>&1 || echo "!!! Migration failed !!!"
+echo "=== Running fresh migrations ==="
+php artisan migrate:fresh --force --seed 2>&1 || echo "!!! Migration failed !!!"
 
 echo "=== Running seeder ==="
 php artisan db:seed --force 2>&1 || echo "!!! Seed failed !!!"
