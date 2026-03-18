@@ -25,14 +25,15 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Copy application code
 COPY . .
 
-# Run post-install scripts
+# Run post-install scripts (no env needed)
 RUN composer run-script post-autoload-dump || true
 
-# Cache config and routes
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear || true
+# Create required storage directories
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Expose port
-EXPOSE ${PORT:-8080}
-
-# Start command: migrate then serve
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Start: migrate (allow failure on first run), then serve
+CMD php artisan migrate --force || true; \
+    php artisan config:cache || true; \
+    php artisan route:cache || true; \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
