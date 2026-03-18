@@ -1,6 +1,5 @@
 'use client';
 
-import { use } from 'react';
 import { Lock } from 'lucide-react';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { useLeaderboardHistory } from '@/lib/hooks/useLeaderboardHistory';
@@ -36,11 +35,11 @@ function TopTickersSection({ analytics }: { analytics: { top_tickers: Array<{ ti
 }
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function AnalyticsPage({ params }: Props) {
-  const { id } = use(params);
+  const { id } = params;
   const { data: league, isLoading: leagueLoading } = useLeague(id);
   const { data: analytics, isLoading, error, mutate } = useAnalytics(id);
   const { data: history } = useLeaderboardHistory(id);
