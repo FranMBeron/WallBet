@@ -9,6 +9,8 @@
 ![PHP](https://img.shields.io/badge/PHP_8.3-777BB4?style=flat-square&logo=php&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)
 
+**Live Demo**: [wallbet.franciscoberon.com](https://wallbet.franciscoberon.com)
+
 ---
 
 ## What is WallBet?
@@ -137,6 +139,23 @@ Demo mode lets you explore WallBet without any external API keys or live market 
 - **Resets nightly** via the `php artisan demo:reset` command to keep data fresh
 
 To activate demo mode, set `APP_DEMO_MODE=true` in the backend `.env` file and configure the demo league IDs in the frontend `.env`.
+
+---
+
+## Deployment
+
+WallBet runs on a split-service architecture with custom subdomains:
+
+| Service | Platform | Domain |
+|---------|----------|--------|
+| Frontend | Vercel | `wallbet.franciscoberon.com` |
+| Backend API | Railway | `api.wallbet.franciscoberon.com` |
+| Database | Neon | PostgreSQL (managed) |
+
+- The **frontend** is a static Next.js build deployed to Vercel with automatic builds on push
+- The **backend** runs as a Dockerized Laravel app on Railway, with migrations and seeding on startup
+- The **database** is hosted on Neon with SSL-encrypted connections
+- Custom subdomains are configured via DNS CNAME records pointing to each platform
 
 ---
 

@@ -32,15 +32,7 @@ RUN composer run-script post-autoload-dump || true
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Start script: migrate, seed, cache, serve
-CMD echo "=== Starting WallBet ===" && \
-    echo "DB_URL: ${DB_URL:0:30}..." && \
-    echo "=== Running migrations ===" && \
-    php artisan migrate --force 2>&1 || echo "!!! Migration failed !!!" && \
-    echo "=== Running seeder ===" && \
-    php artisan db:seed --force 2>&1 || echo "!!! Seed failed !!!" && \
-    echo "=== Caching config ===" && \
-    php artisan config:cache 2>&1 || true && \
-    php artisan route:cache 2>&1 || true && \
-    echo "=== Starting server on port ${PORT:-8080} ===" && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+CMD ["/app/start.sh"]
