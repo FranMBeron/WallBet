@@ -1,2 +1,1 @@
-[phases.setup]
-nixPkgs = ["php83Extensions.pgsql", "php83Extensions.pdo_pgsql"]
+# No longer used — we use Dockerfile instead. See railway.toml.
