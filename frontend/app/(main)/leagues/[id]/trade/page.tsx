@@ -1,6 +1,5 @@
 'use client';
 
-import { use } from 'react';
 import { useLeague } from '@/lib/hooks/useLeague';
 import { LeagueHeader } from '@/components/layout/LeagueHeader';
 import { TabBar } from '@/components/layout/TabBar';
@@ -10,11 +9,11 @@ import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function TradePage({ params }: Props) {
-  const { id } = use(params);
+  const { id } = params;
   const { data: league, isLoading: leagueLoading } = useLeague(id);
 
   return (
