@@ -32,8 +32,9 @@ RUN composer run-script post-autoload-dump || true
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Start: migrate (allow failure on first run), then serve
+# Start: migrate, seed if needed, then serve
 CMD php artisan migrate --force || true; \
+    php artisan db:seed --force || true; \
     php artisan config:cache || true; \
     php artisan route:cache || true; \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
