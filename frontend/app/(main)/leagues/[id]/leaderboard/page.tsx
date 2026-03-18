@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useLeaderboard } from '@/lib/hooks/useLeaderboard';
 import { useLeague } from '@/lib/hooks/useLeague';
 import { useAuth } from '@/lib/hooks/useAuth';
@@ -12,11 +12,11 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function LeaderboardPage({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
   const { user } = useAuth();
   const { data: league, isLoading: leagueLoading } = useLeague(id);
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);

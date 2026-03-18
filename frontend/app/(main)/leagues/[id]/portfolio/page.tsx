@@ -1,6 +1,6 @@
 'use client';
 
-
+import { use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import { usePortfolio } from '@/lib/hooks/usePortfolio';
@@ -16,11 +16,11 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function PortfolioPage({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId') ?? undefined;
 

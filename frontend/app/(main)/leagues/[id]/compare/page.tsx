@@ -1,6 +1,6 @@
 'use client';
 
-
+import { use } from 'react';
 import { useLeague } from '@/lib/hooks/useLeague';
 import { useLeaderboard } from '@/lib/hooks/useLeaderboard';
 import { LeagueHeader } from '@/components/layout/LeagueHeader';
@@ -11,11 +11,11 @@ import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function ComparePage({ params }: Props) {
-  const { id } = params;
+  const { id } = use(params);
   const { data: league, isLoading: leagueLoading, error: leagueError, mutate: mutateLeague } = useLeague(id);
 
   // Fetch leaderboard to get participants list for finished leagues

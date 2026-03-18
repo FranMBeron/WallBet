@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { apiFetcher, apiMutate } from '@/lib/api';
@@ -11,11 +11,11 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import type { League, ApiValidationError } from '@/types/api';
 
 interface Props {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 }
 
 export default function JoinByCodePage({ params }: Props) {
-  const { code } = params;
+  const { code } = use(params);
   const router = useRouter();
 
   const { data: league, isLoading, error, mutate } = useSWR<League>(
