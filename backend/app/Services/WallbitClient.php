@@ -72,6 +72,20 @@ class WallbitClient
         string $orderType,
         float  $amount,
     ): array {
+        if (config('app.demo_mode')) {
+            $mock = $this->getMockAsset($symbol);
+            $shares = $amount / $mock['price'];
+
+            return [
+                'symbol'     => $symbol,
+                'direction'  => $direction,
+                'shares'     => $shares,
+                'amount'     => $amount,
+                'status'     => 'FILLED',
+                'created_at' => now()->toIso8601String(),
+            ];
+        }
+
         $response = Http::withHeader('X-API-Key', $apiKey)
             ->post("{$this->baseUrl}/trades", [
                 'symbol'     => $symbol,
@@ -101,6 +115,10 @@ class WallbitClient
      */
     public function getAsset(string $apiKey, string $symbol): array
     {
+        if (config('app.demo_mode')) {
+            return $this->getMockAsset($symbol);
+        }
+
         $response = Http::withHeader('X-API-Key', $apiKey)
             ->get("{$this->baseUrl}/assets/{$symbol}");
 
@@ -135,5 +153,36 @@ class WallbitClient
         }
 
         return $response->json('data.data', []);
+    }
+
+    /**
+     * Return mock asset data for demo mode.
+     * Applies ±2% jitter to the base price.
+     */
+    private function getMockAsset(string $symbol): array
+    {
+        $assets = [
+            'AAPL'  => ['price' => 185,  'name' => 'Apple Inc.',          'sector' => 'Technology'],
+            'GOOGL' => ['price' => 175,  'name' => 'Alphabet Inc.',       'sector' => 'Communication Services'],
+            'MSFT'  => ['price' => 420,  'name' => 'Microsoft Corp.',     'sector' => 'Technology'],
+            'TSLA'  => ['price' => 245,  'name' => 'Tesla Inc.',          'sector' => 'Consumer Cyclical'],
+            'NVDA'  => ['price' => 880,  'name' => 'NVIDIA Corp.',        'sector' => 'Technology'],
+            'AMZN'  => ['price' => 185,  'name' => 'Amazon.com Inc.',     'sector' => 'Consumer Cyclical'],
+            'META'  => ['price' => 500,  'name' => 'Meta Platforms Inc.', 'sector' => 'Technology'],
+        ];
+
+        $upper = strtoupper($symbol);
+        $base  = $assets[$upper] ?? ['price' => 100, 'name' => "{$symbol} Inc.", 'sector' => 'Unknown'];
+
+        // Apply ±2% jitter
+        $jitter = mt_rand(-200, 200) / 10000;
+        $price  = round($base['price'] * (1 + $jitter), 2);
+
+        return [
+            'symbol' => $upper,
+            'price'  => $price,
+            'name'   => $base['name'],
+            'sector' => $base['sector'],
+        ];
     }
 }

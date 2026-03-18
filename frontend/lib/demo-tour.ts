@@ -1,4 +1,4 @@
-// Demo tour — single global 10-step journey using driver.js.
+// Demo tour — single global 11-step journey using driver.js.
 // Navigates across pages using Next.js router.
 
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -52,6 +52,15 @@ function buildSteps(): TourStep[] {
       popover: {
         title: 'Análisis por Ticker',
         description: 'Métricas detalladas de cada ticker operado.',
+        side: 'bottom',
+      },
+    },
+    {
+      route: `/leagues/${activeId}/trade`,
+      element: '[data-tour="trade-form"]',
+      popover: {
+        title: 'Operar',
+        description: 'Comprá y vendé activos en tiempo real durante la liga.',
         side: 'bottom',
       },
     },

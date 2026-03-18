@@ -28,13 +28,22 @@ class TradeController extends Controller
      */
     public function execute(ExecuteTradeRequest $request, League $league): JsonResponse
     {
+        if (!$league->isActive()) {
+            return response()->json(['message' => 'Trades can only be executed in active leagues.'], 403);
+        }
+
         $user = $request->user();
 
-        $wallbitKey = WallbitKey::where('user_id', $user->id)
-            ->where('is_valid', true)
-            ->firstOrFail();
+        // In demo mode, use a dummy key — WallbitClient returns mock data without hitting the real API.
+        if (config('app.demo_mode')) {
+            $apiKey = 'demo-key';
+        } else {
+            $wallbitKey = WallbitKey::where('user_id', $user->id)
+                ->where('is_valid', true)
+                ->firstOrFail();
 
-        $apiKey = $this->vault->decrypt($wallbitKey);
+            $apiKey = $this->vault->decrypt($wallbitKey);
+        }
 
         try {
             $tradeData = $this->client->executeTrade(
@@ -63,6 +72,38 @@ class TradeController extends Controller
         ]);
 
         return (new TradeLogResource($trade))->response()->setStatusCode(201);
+    }
+
+    /**
+     * GET /leagues/{league}/trades
+     * Return paginated own trades for the league, ordered executed_at DESC.
+     */
+    /**
+     * GET /leagues/{league}/assets/{symbol}
+     * Preview asset price and details before trading.
+     */
+    public function previewAsset(Request $request, League $league, string $symbol): JsonResponse
+    {
+        $user = $request->user();
+
+        // In demo mode, use a dummy key — WallbitClient returns mock data without hitting the real API.
+        if (config('app.demo_mode')) {
+            $apiKey = 'demo-key';
+        } else {
+            $wallbitKey = WallbitKey::where('user_id', $user->id)
+                ->where('is_valid', true)
+                ->firstOrFail();
+
+            $apiKey = $this->vault->decrypt($wallbitKey);
+        }
+
+        try {
+            $asset = $this->client->getAsset($apiKey, strtoupper($symbol));
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => 'Asset not found for symbol: ' . strtoupper($symbol)], 404);
+        }
+
+        return response()->json(['data' => $asset]);
     }
 
     /**

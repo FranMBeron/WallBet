@@ -50,6 +50,7 @@ Route::prefix('leagues')->middleware('auth:sanctum')->group(function () {
 
     Route::post('/{league}/trades',   [TradeController::class, 'execute'])->middleware('league.member');
     Route::get('/{league}/trades',    [TradeController::class, 'index'])->middleware('league.member');
+    Route::get('/{league}/assets/{symbol}', [TradeController::class, 'previewAsset'])->middleware('league.member');
     Route::get('/{league}/portfolio', [PortfolioController::class, 'show'])->middleware('league.member');
 
     // Competition — IMPORTANT: leaderboard/history MUST be declared BEFORE leaderboard to prevent shadowing

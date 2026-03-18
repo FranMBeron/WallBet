@@ -1,4 +1,5 @@
 import { clearToken, getToken } from './auth';
+import type { AssetInfo, ExecuteTradePayload, TradeLog } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -71,6 +72,43 @@ export async function apiFetcher<T>(path: string): Promise<T> {
   return (json?.data !== undefined ? json.data : json) as T;
 }
 
+/**
+ * Fetcher that returns the full JSON response without unwrapping "data".
+ * Use for paginated endpoints where you need current_page, last_page, etc.
+ */
+export async function apiRawFetcher<T>(path: string): Promise<T> {
+  const token = getToken();
+
+  const res = await fetch(`${API_URL}/api${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: 'include',
+  });
+
+  if (res.status === 401) {
+    clearToken();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+    throw new Error('Unauthorized');
+  }
+
+  if (!res.ok) {
+    let errorBody: Record<string, unknown>;
+    try {
+      errorBody = await res.json() as Record<string, unknown>;
+    } catch {
+      errorBody = { message: res.statusText };
+    }
+    throw { ...errorBody, status: res.status };
+  }
+
+  return await res.json() as T;
+}
+
 // ----------------------------------------------------------------
 // Mutation helper for POST / PUT / PATCH / DELETE
 // Returns the parsed JSON response body.
@@ -124,4 +162,16 @@ export async function apiMutate<T = unknown>(
   // Laravel API Resources wrap responses in {"data": ...} — unwrap automatically.
   const json = data as Record<string, unknown>;
   return (json?.data !== undefined ? json.data : json) as T;
+}
+
+// ----------------------------------------------------------------
+// Trading
+// ----------------------------------------------------------------
+
+export async function fetchAssetPreview(leagueId: string, symbol: string): Promise<AssetInfo> {
+  return apiFetcher(`/leagues/${leagueId}/assets/${symbol}`);
+}
+
+export async function executeTrade(leagueId: string, payload: ExecuteTradePayload): Promise<TradeLog> {
+  return apiMutate(`/leagues/${leagueId}/trades`, 'POST', payload);
 }

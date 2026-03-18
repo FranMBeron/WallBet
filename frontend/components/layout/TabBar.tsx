@@ -3,27 +3,35 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import type { LeagueStatus } from '@/types/api';
 
-const TABS = [
+const BASE_TABS = [
   { label: 'Leaderboard', segment: 'leaderboard' },
   { label: 'Portfolio',   segment: 'portfolio' },
   { label: 'Analytics',  segment: 'analytics' },
   { label: 'Compare',    segment: 'compare' },
 ];
 
+const TRADE_TAB = { label: 'Trade', segment: 'trade' };
+
 interface TabBarProps {
   leagueId: string;
+  leagueStatus?: LeagueStatus;
 }
 
-export function TabBar({ leagueId }: TabBarProps) {
+export function TabBar({ leagueId, leagueStatus }: TabBarProps) {
   const pathname = usePathname();
+
+  const tabs = leagueStatus === 'active'
+    ? [...BASE_TABS, TRADE_TAB]
+    : BASE_TABS;
 
   return (
     <nav
       className="flex border-b border-[#222222] overflow-x-auto"
       aria-label="League tabs"
     >
-      {TABS.map(({ label, segment }) => {
+      {tabs.map(({ label, segment }) => {
         const href = `/leagues/${leagueId}/${segment}`;
         const isActive = pathname.includes(`/${segment}`);
 

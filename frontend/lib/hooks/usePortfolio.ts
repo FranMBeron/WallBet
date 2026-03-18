@@ -11,5 +11,8 @@ export function usePortfolio(leagueId: string | null, userId?: string) {
       : `/leagues/${leagueId}/portfolio`
     : null;
 
-  return useSWR<PortfolioResponse>(key, apiFetcher);
+  return useSWR<PortfolioResponse>(key, apiFetcher, {
+    refreshInterval: 30_000,   // re-fetch every 30s so current_price reflects live jitter
+    dedupingInterval: 5_000,   // allow re-fetch after trade-triggered mutate()
+  });
 }

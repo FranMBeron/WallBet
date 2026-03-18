@@ -36,12 +36,17 @@ class PortfolioService
             return $this->buildFromSnapshot($league, $user);
         }
 
-        // Retrieve user's API key — throws ModelNotFoundException if none exists
-        $wallbitKey = WallbitKey::where('user_id', $user->id)
-            ->where('is_valid', true)
-            ->firstOrFail();
+        // Retrieve user's API key.
+        // In demo mode, use a dummy key — WallbitClient returns mock data without hitting the real API.
+        if (config('app.demo_mode')) {
+            $apiKey = 'demo-key';
+        } else {
+            $wallbitKey = WallbitKey::where('user_id', $user->id)
+                ->where('is_valid', true)
+                ->firstOrFail();
 
-        $apiKey = $this->vault->decrypt($wallbitKey);
+            $apiKey = $this->vault->decrypt($wallbitKey);
+        }
 
         // Get initial capital from league membership
         $member = $league->leagueMembers()

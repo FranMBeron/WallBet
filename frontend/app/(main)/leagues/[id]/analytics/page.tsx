@@ -53,7 +53,7 @@ export default function AnalyticsPage({ params }: Props) {
       ) : league ? (
         <>
           <LeagueHeader league={league} />
-          <TabBar leagueId={id} />
+          <TabBar leagueId={id} leagueStatus={league.status} />
         </>
       ) : null}
 

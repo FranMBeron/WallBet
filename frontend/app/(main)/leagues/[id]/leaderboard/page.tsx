@@ -53,7 +53,7 @@ export default function LeaderboardPage({ params }: Props) {
       ) : league ? (
         <>
           <LeagueHeader league={league} />
-          <TabBar leagueId={id} />
+          <TabBar leagueId={id} leagueStatus={league.status} />
         </>
       ) : null}
 

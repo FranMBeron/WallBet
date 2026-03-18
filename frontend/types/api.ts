@@ -212,3 +212,39 @@ export interface ApiValidationError {
 export interface ApiError {
   message: string;
 }
+
+// ----------------------------------------------------------------
+// Trading
+// ----------------------------------------------------------------
+
+export interface AssetInfo {
+  symbol: string;
+  name: string;
+  price: number;
+  sector: string;
+}
+
+export interface TradeLog {
+  id: string;
+  ticker: string;
+  action: 'BUY' | 'SELL';
+  quantity: number;
+  price: number;
+  total_amount: number;
+  executed_at: string;
+}
+
+export interface ExecuteTradePayload {
+  symbol: string;
+  direction: 'BUY' | 'SELL';
+  order_type: 'MARKET';
+  amount: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}

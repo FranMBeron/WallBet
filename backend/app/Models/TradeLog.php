@@ -29,6 +29,9 @@ class TradeLog extends Model
     {
         return [
             'action' => TradeAction::class,
+            'quantity' => 'float',
+            'price' => 'float',
+            'total_amount' => 'float',
             'executed_at' => 'datetime',
         ];
     }
