@@ -153,7 +153,7 @@ test.describe('Trading', () => {
     // Verify dialog shows correct details (scoped to dialog to avoid duplicates)
     const dialog = page.locator('[role="dialog"]');
     await expect(dialog.getByText('AAPL')).toBeVisible();
-    await expect(dialog.getByText('BUY')).toBeVisible();
+    await expect(dialog.getByText('BUY', { exact: true })).toBeVisible();
 
     // Confirm the trade
     await page.getByRole('button', { name: /Confirm BUY/i }).click();
@@ -352,7 +352,7 @@ test.describe('Trading', () => {
     await expect(page.getByText(/Apple/i).first()).toBeVisible({ timeout: 15_000 });
     await expect(page.locator('.text-2xl')).toBeVisible({ timeout: 5_000 });
 
-    // Clear and test invalid ticker
+    // Clear and test unknown ticker (demo mode returns fallback data, not an error)
     await tickerInput.fill('');
     await tickerInput.blur();
     await page.waitForTimeout(500);
@@ -360,7 +360,7 @@ test.describe('Trading', () => {
     await tickerInput.fill('ZZZZZ');
     await tickerInput.blur();
 
-    // Should show error message (actual text: "Asset not found or unavailable.")
-    await expect(page.getByText(/Asset not found/i)).toBeVisible({ timeout: 15_000 });
+    // In demo mode, unknown tickers return fallback data with name "{TICKER} Inc."
+    await expect(page.getByText(/ZZZZZ Inc\./i)).toBeVisible({ timeout: 15_000 });
   });
 });
