@@ -63,11 +63,12 @@ class LeaderboardService
         }
 
         // QUERY C — all trades for league (single query, group in PHP)
+        // Filter by executed_at <= ends_at so post-finish trades don't affect stats
         $allTrades = DB::select("
             SELECT user_id, ticker, action, quantity, price, total_amount
             FROM trades_log
-            WHERE league_id = ?
-        ", [$league->id]);
+            WHERE league_id = ? AND executed_at <= ?
+        ", [$league->id, $league->ends_at]);
 
         $tradesByUser = [];
         foreach ($allTrades as $trade) {

@@ -1,5 +1,5 @@
 import { clearToken, getToken } from './auth';
-import type { AssetInfo, ExecuteTradePayload, TradeLog } from '@/types/api';
+import type { AssetInfo, ExecuteTradePayload, LiquidateResponse, TradeLog } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
@@ -174,4 +174,12 @@ export async function fetchAssetPreview(leagueId: string, symbol: string): Promi
 
 export async function executeTrade(leagueId: string, payload: ExecuteTradePayload): Promise<TradeLog> {
   return apiMutate(`/leagues/${leagueId}/trades`, 'POST', payload);
+}
+
+// ----------------------------------------------------------------
+// Liquidation
+// ----------------------------------------------------------------
+
+export async function liquidateAll(leagueId: string): Promise<LiquidateResponse> {
+  return apiMutate<LiquidateResponse>(`/leagues/${leagueId}/liquidate`, 'POST');
 }

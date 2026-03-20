@@ -241,6 +241,24 @@ export interface ExecuteTradePayload {
   amount: number;
 }
 
+// ----------------------------------------------------------------
+// Liquidation
+// ----------------------------------------------------------------
+
+export interface LiquidationResult {
+  ticker: string;
+  status: 'ok' | 'failed';
+  shares?: number;
+  amount?: number;
+  error?: string;
+}
+
+export interface LiquidateResponse {
+  results: LiquidationResult[];
+  total_sold: number;
+  total_failed: number;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   current_page: number;

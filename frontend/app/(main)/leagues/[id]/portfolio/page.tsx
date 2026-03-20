@@ -13,6 +13,7 @@ import { AllocationDonut } from '@/components/portfolio/AllocationDonut';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LiquidateButton } from '@/components/portfolio/LiquidateButton';
 
 interface Props {
   params: { id: string };
@@ -44,9 +45,14 @@ export default function PortfolioPage({ params }: Props) {
       ) : null}
 
       <div className="mt-4" data-tour="portfolio-hidden">
-        <h2 className="text-lg font-semibold text-white mb-4">
-          {isOwnPortfolio ? 'My Portfolio' : `${portfolio?.user?.display_name ?? 'Member'}'s Portfolio`}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">
+            {isOwnPortfolio ? 'My Portfolio' : `${portfolio?.user?.display_name ?? 'Member'}'s Portfolio`}
+          </h2>
+          {isOwnPortfolio && league?.status === 'finished' && portfolio && portfolio.positions.length > 0 && (
+            <LiquidateButton leagueId={id} positions={portfolio.positions} />
+          )}
+        </div>
 
         {/* Locked state for other members during active league */}
         {showLocked ? (
@@ -73,10 +79,14 @@ export default function PortfolioPage({ params }: Props) {
             description="Unite a la liga para empezar a operar."
           />
         ) : portfolio.positions.length === 0 ? (
-          <EmptyState
-            title="No tenés un portfolio en esta liga aún"
-            description="Unite a la liga para empezar a operar."
-          />
+          <div className="space-y-6">
+            <PortfolioSummary summary={portfolio.summary} />
+            <div className="flex flex-col items-center justify-center rounded-xl border border-[#222222] bg-[#111111] py-12 px-6 text-center">
+              <p className="text-sm text-gray-400">
+                No tenés posiciones abiertas en esta liga.
+              </p>
+            </div>
+          </div>
         ) : (
           <div data-tour="portfolio-positions" className="space-y-6">
             {/* Summary stats */}

@@ -29,7 +29,17 @@ class TradeController extends Controller
     public function execute(ExecuteTradeRequest $request, League $league): JsonResponse
     {
         if (!$league->isActive()) {
-            return response()->json(['message' => 'Trades can only be executed in active leagues.'], 403);
+            // Allow SELL trades in finished leagues (for liquidation / cash-out)
+            $isFinishedSell = $league->status === \App\Enums\LeagueStatus::Finished
+                && $request->direction === 'SELL';
+
+            if (!$isFinishedSell) {
+                $message = $league->status === \App\Enums\LeagueStatus::Finished
+                    ? 'Only SELL trades are allowed in finished leagues.'
+                    : 'Trades can only be executed in active leagues.';
+
+                return response()->json(['message' => $message], 403);
+            }
         }
 
         $user = $request->user();

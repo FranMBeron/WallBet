@@ -7,6 +7,7 @@ use App\Http\Controllers\CompareController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LeagueController;
 use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\LiquidationController;
 use App\Http\Controllers\TradeController;
 use App\Http\Controllers\WallbitController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,7 @@ Route::prefix('leagues')->middleware('auth:sanctum')->group(function () {
     Route::get('/{league}/trades',    [TradeController::class, 'index'])->middleware('league.member');
     Route::get('/{league}/assets/{symbol}', [TradeController::class, 'previewAsset'])->middleware('league.member');
     Route::get('/{league}/portfolio', [PortfolioController::class, 'show'])->middleware('league.member');
+    Route::post('/{league}/liquidate', [LiquidationController::class, 'liquidate'])->middleware('league.member');
 
     // Competition — IMPORTANT: leaderboard/history MUST be declared BEFORE leaderboard to prevent shadowing
     Route::get('/{league}/leaderboard/history', [LeaderboardController::class, 'history'])->middleware('league.member');
